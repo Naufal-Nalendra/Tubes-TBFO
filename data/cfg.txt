@@ -1,0 +1,86 @@
+Start:
+START
+
+Terminals:
+.
+,
++
+-
+*
+/
+\
+^
+[
+]
+{
+}
+(
+)
+'
+"
+:
+;
+=
+!
+>
+<
+%
+~
+&
+break	
+const	
+case	
+catch	
+continue
+default	
+delete	
+else	
+false	
+finally
+for	
+function	
+if	
+let	
+null
+return	
+switch	
+throw	
+try	
+true
+var	
+while			
+
+Groups:
+name = (a-z+A-Z+\_)(a-z+A-Z+\_+0-9)*
+number = (0-9)(0-9)*
+
+Rules:
+// MAIN
+
+// SYMBOLS
+DOT -> .
+PLUS -> +
+MINUS -> -
+MULTIPLY -> *
+DIVISION -> /
+OPEN_SQUARE_BRACKET -> [
+CLOSE_SQUARE_BRACKET -> ]
+OPEN_CURLY_BRACKET -> {
+CLOSE_CURLY_BRACKET -> }
+OPEN_NORMAL_BRACKET -> (
+CLOSE_NORMAL_BRACKET -> )
+SINGLE_QUOTE -> '
+DOUBLE_QUOTE -> "
+COLON -> :
+SEMICOLON -> ;
+COMMA -> ,
+SPACE -> SPACE SPACE
+OR_SYM -> or
+BANG_SYM -> !
+GT_SYM -> <
+LT_SYM -> > 
+EQ_SYM -> =
+TILDE_SYM -> ~
+PERCENT_SYM -> %
+CARET_SYM -> ^
+BACKSLASH -> \
