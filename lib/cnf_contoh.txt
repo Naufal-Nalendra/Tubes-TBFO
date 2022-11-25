@@ -1,4 +1,0 @@
-A -> ZB ε
-B -> YA b
-Z -> YB
-Y -> a
