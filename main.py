@@ -1,5 +1,6 @@
-from lib.CFGtoCNF import readCFG
-from lib.CFGtoCNF import converter
+from lib.CFGtoCNF import convert_list_to_dict
+from lib.CFGtoCNF import convert_grammar
+from lib.CFGtoCNF import read_grammar
 from lib.CYKparser import CYKParser
 from lib.reader import read
 import sys
@@ -24,8 +25,7 @@ def ASCIIart():
 if __name__ == "__main__":
     ASCIIart()
     # fungsi baca grammar taruh disini
-    CFG = readCFG("data\\cfg.txt")
-    CNF = converter(CFG)
+    CNF = convert_list_to_dict(convert_grammar(read_grammar(r'data\cfg.txt')))
     
     # masukkan input file yang diuji
     namaFile = input("Masukkan nama file yang akan diuji: ")

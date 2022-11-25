@@ -8,7 +8,7 @@ def print_grammar(grammar):
         print()
 
 def write_grammar(grammar):
-    file = open('cnf_grammar.txt', 'w')
+    file = open(r'data\cnf_grammar.txt', 'w')
     for rule in grammar:
         file.write(rule[0])
         file.write(" -> ")
@@ -18,8 +18,19 @@ def write_grammar(grammar):
         file.write("\n")
     file.close()
 
-def read_grammar(grammar_file):
+def convert_list_to_dict(grammar):
+    dict = {}
+    for rule in grammar:
+        new = []
+        for i in rule[1:]:
+            new.append(i)
+        if rule[0] in dict:
+            dict[rule[0]] += new
+        else:
+            dict[rule[0]] = new
+    return dict
 
+def read_grammar(grammar_file):
     with open(grammar_file) as cfg:
         baris = cfg.readlines()
     return [x.replace("->", "").split() for x in baris]
@@ -75,5 +86,7 @@ def convert_grammar(grammar):
                 add_rule(new_rule)
     return res
 
-write_grammar(convert_grammar(read_grammar(r'data\cfg.txt')))
-print(convert_grammar(read_grammar(r'data\cfg.txt')))
+# write_grammar(convert_grammar(read_grammar(r'data\cfg.txt')))
+# print(convert_grammar(read_grammar(r'data\cfg.txt')))
+# a = convert_list_to_dict(convert_grammar(read_grammar(r'data\cfg.txt')))
+# print(a)
