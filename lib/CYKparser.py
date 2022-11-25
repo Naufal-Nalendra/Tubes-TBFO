@@ -14,7 +14,7 @@ def CYKParser(input, CNF):
   cnfLength = len(CNF)
   
   # P merupakan 3 dimensional array of booleans
-  bool = np.zeros((cnfLength+1, cnfLength+1, strLength+1))
+  bool = [[[0 for x in range(cnfLength + 1)] for x in range(strLength + 1)] for x in range(strLength + 1)]
   # R merupakan array untuk menampung grammar cnf
   list = [None for x in range(cnfLength + 1)] 
   map = {}
