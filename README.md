@@ -9,7 +9,7 @@
 | Irgiansyah Mondo                | 13521167 | K02   |
 
 ## DEFINISI SINGKAT
-pada tugas ini kami mengimplementasikan parser untuk JavaScript (Node.js) untuk beberapa statement dan sintaks bawaan JavaScript. Dengan Menggunakan konsep CFG untuk pengerjaan parser yang mengevaluasi syntax program. serta Untuk nama variabel dan operasi (+, -, >, dll) kami menggunakan konsep FA.
+Pada tugas ini kami mengimplementasikan parser untuk JavaScript (Node.js) untuk beberapa statement dan sintaks bawaan JavaScript. Dengan Menggunakan konsep CFG untuk pengerjaan parser yang mengevaluasi syntax program. serta Untuk nama variabel dan operasi (+, -, >, dll) kami menggunakan konsep FA.
 
 
 ## How to use
