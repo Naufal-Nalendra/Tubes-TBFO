@@ -16,14 +16,13 @@ def CYKParser(input, CNF):
   # P merupakan 3 dimensional array of booleans
   bool = [[[0 for x in range(cnfLength + 1)] for x in range(strLength + 1)] for x in range(strLength + 1)]
   # R merupakan array untuk menampung grammar cnf
-  list = [None for x in range(cnfLength + 1)] 
+  list = [None]
+  id = dict(zip(CNF, [i for i in range(1, cnfLength+1)]))
   map = {}
 
-  # Memasukan index dan variable yang terdapat di CNF ke map dan R
-  range = enumerate(CNF)
-  for i, var in range:
-    map[var] = i + 1
-    list[i + 1] = CNF[var]
+  # Memasukan index dan variable yang terdapat di CNF ke map dan R 
+  for var in CNF:
+    list.append(CNF[var])
   
   # CYK table-filling algorithm
   for i in range(1, strLength+1):
@@ -39,9 +38,7 @@ def CYKParser(input, CNF):
         for k in range(1, cnfLength + 1):
           for cnf in list[k]:
             if (len(cnf) != 1):
-              cell1 = map[cnf[0]]
-              cell2 = map[cnf[1]]
-              if bool[j][i][cell1] and bool[l-j][i+j][cell2]:
+              if bool[j][i][id[cnf[0]]] and bool[l-j][i+j][id[cnf[1]]]:
                 bool[l][i][k] = True
   
   # Menunjukkan hasil parsing pada user

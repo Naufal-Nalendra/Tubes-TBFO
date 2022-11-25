@@ -36,7 +36,7 @@ if __name__ == "__main__":
 
     # Input
     if (len(sys.argv) < 2):
-        dir = "./test/"
+        dir = "..\\test\\"
         path = dir + fileName
     else:
         path = sys.argv[1]
