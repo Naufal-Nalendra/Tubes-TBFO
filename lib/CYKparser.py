@@ -8,46 +8,42 @@ def parseResult(boolMatrix,length):
   else:
     print("Syntax Error")
 
-# Fungsi menunjukkan letak parsing error paling awal
-def findError():
-  return
-
 # Fungsi parsing grammar dengan algoritma CYK
 def CYKParser(input, CNF):
   strLength = len(input)
   cnfLength = len(CNF)
   
   # P merupakan 3 dimensional array of booleans
-  P = np.zeros((cnfLength+1, cnfLength+1, strLength+1))
+  bool = np.zeros((cnfLength+1, cnfLength+1, strLength+1))
   # R merupakan array untuk menampung grammar cnf
-  R = [None for x in range(cnfLength + 1)] 
+  list = [None for x in range(cnfLength + 1)] 
   map = {}
 
   # Memasukan index dan variable yang terdapat di CNF ke map dan R
   range = enumerate(CNF)
   for i, var in range:
     map[var] = i + 1
-    R[i + 1] = CNF[var]
+    list[i + 1] = CNF[var]
   
   # CYK table-filling algorithm
   for i in range(1, strLength+1):
     for j in range(1, cnfLength+1):
-      for cnf in R[j]:
+      for cnf in list[j]:
         if cnf[0] == input[i-1]:
-          P[1][i][j] = True
+          bool[1][i][j] = True
           break
   
   for l in range(2, strLength+1):
     for i in range(1, strLength-l+2):
       for j in range(1, l):
         for k in range(1, cnfLength + 1):
-          for cnf in R[k]:
+          for cnf in list[k]:
             if (len(cnf) != 1):
               cell1 = map[cnf[0]]
               cell2 = map[cnf[1]]
-              if P[j][i][cell1] and P[l-j][i+j][cell2]:
-                P[l][i][k] = True
+              if bool[j][i][cell1] and bool[l-j][i+j][cell2]:
+                bool[l][i][k] = True
   
   # Menunjukkan hasil parsing pada user
-  parseResult(P,strLength)
+  parseResult(bool,strLength)
   

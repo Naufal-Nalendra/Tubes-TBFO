@@ -2,8 +2,8 @@ import string
 def enumerateFunction():
     with open('./data/functions.txt', 'r') as f:
         lines = f.read()
-    synatom = lines.split('\n')
-    enum = dict(zip(synatom, [chr(ord('A')+i) for i in range(len(synatom))]))
+    func = lines.split('\n')
+    enum = dict(zip(func, [chr(ord('A')+i) for i in range(len(func))]))
     return enum
 
 
@@ -11,11 +11,11 @@ def enumerateFunction():
 def read(filepath: str):
     f = open(filepath, 'r')
     w = f.read()
-    alp = string.ascii_lowercase
-    Alp = string.ascii_uppercase
-    num = string.digits
+    lowCase = string.ascii_lowercase
+    uppCase = string.ascii_uppercase
+    dig = string.digits
     res = ""
-    atom = enumerateFunction()
+    funct = enumerateFunction()
 
     while(w):
         # string processing
@@ -78,7 +78,7 @@ def read(filepath: str):
             else:
                 res += w[0]    
         # cek comment
-        elif(w[0] == '#'):
+        elif(w[0] == '//'):
             tmp = w
             w = w[1:]
             while(w):
@@ -90,17 +90,17 @@ def read(filepath: str):
                 break
             else:
                 w = tmp
-        elif(w[0] not in (alp+Alp+num+'_')):
+        elif(w[0] not in (lowCase+uppCase+dig+'_')):
             res += w[0]
         else:
-            if(w[0] not in (alp+Alp+'_')):
-                # cek floating point dan integer kemudian disubstitusi menjadi 'n'
-                # cek ada var tidak valid, kemudian di assign menjadi 'x'
-                if(w[0] in num):
+            if(w[0] not in (lowCase+uppCase+'_')):
+                # n is for integer and float
+                # x is for invalid variable
+                if(w[0] in dig):
                     tmp = w
                     w = w[1:]
                     while(w):
-                        if(w[0] not in num):
+                        if(w[0] not in dig):
                             break
                         tmp = w
                         w = w[1:]
@@ -111,18 +111,18 @@ def read(filepath: str):
                         tmp = w
                         w = w[1:]
                         while(w):
-                            if(w[0] not in num):
+                            if(w[0] not in dig):
                                 break
                             tmp = w
                             w = w[1:]
                         if(not w):
                             res += 'n'
                             break
-                        if(w[0] in (alp+Alp+'_')):
+                        if(w[0] in (lowCase+uppCase+'_')):
                             tmp = w
                             w = w[1:]
                             while(w):
-                                if(w[0] not in (alp+Alp+'_'+num)):
+                                if(w[0] not in (lowCase+uppCase+'_'+dig)):
                                     break
                                 tmp = w
                                 w = w[1:]
@@ -135,11 +135,11 @@ def read(filepath: str):
                             res += 'n'
                             w = tmp
                         
-                    elif(w[0] in (alp+Alp+'_')):
+                    elif(w[0] in (lowCase+uppCase+'_')):
                         tmp = w
                         w = w[1:]
                         while(w):
-                            if(w[0] not in (alp+Alp+'_'+num)):
+                            if(w[0] not in (lowCase+uppCase+'_'+dig)):
                                 break
                             tmp = w
                             w = w[1:]
@@ -155,18 +155,18 @@ def read(filepath: str):
                     tmp = w
                     w = w[1:]
                     while(w):
-                        if(w[0] not in num):
+                        if(w[0] not in dig):
                             break
                         tmp = w
                         w = w[1:]
                     if(not w):
                         res += 'n'
                         break
-                    if(w[0] in (alp+Alp+'_')):
+                    if(w[0] in (lowCase+uppCase+'_')):
                         tmp = w
                         w = w[1:]
                         while(w):
-                            if(w[0] not in (alp+Alp+'_'+num)):
+                            if(w[0] not in (lowCase+uppCase+'_'+dig)):
                                 break
                             tmp = w
                             w = w[1:]
@@ -182,18 +182,18 @@ def read(filepath: str):
                 tmp = w
                 w = w[1:]
                 while w:
-                    if(w[0] not in (alp+Alp+num+'_')):
+                    if(w[0] not in (lowCase+uppCase+dig+'_')):
                         break
                     else:
                         cur += w[0]
                     tmp = w
                     w = w[1:]
-                if(cur in atom):
+                if(cur in funct):
                     if(w):
-                        res += atom[cur]
+                        res += funct[cur]
                         w = tmp
                     else:
-                        res += atom[cur]
+                        res += funct[cur]
                         w = tmp
                 else:
                     if(w):
