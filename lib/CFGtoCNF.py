@@ -1,228 +1,111 @@
-import copy
+from copy import deepcopy
 import string
 import codecs
 
-INPUT = open(r'lib\cfg_contoh.txt', 'r').read().split('\n') # input file cfg
-EPS = 'ε'
+def readCFGFile(filepath):
+	cfg = {} 
+	f = open(filepath, 'r')
+	lines = [line.split('->') for line in f.readlines()]
+	for line in lines:
+		if line[0] not in "\n" and line[0][0] not in "#":
+			var = line[0].replace(" ","")
+			production = [raw.split() for raw in line[1].split('|')]
+			key = list(cfg.keys())
+			if var in key:
+				productions = cfg[var]
+				productions.extend(production)
+			else:
+				cfg.update({var : production})
+	f.close()
+	return cfg
 
-def _power_set(seq):
-    if len(seq) <= 1:
-        yield seq
-        yield []
-    else:
-        for item in _power_set(seq[1:]):
-            yield [seq[0]] + item
-            yield item
+def isVar(x):
+	for char in x:
+		if char not in (string.ascii_uppercase + '_' + string.digits):
+			return False
+	return True
 
-def _replace(str, subStr, mask):
-    result = []
-    for m in mask:
-        modified = str
-        pos = 1
-        for i in m:
-            for _ in range(i):
-                pos = modified.find(subStr, pos - i)
-            modified = modified[:pos] + modified[pos + 1:]
-        result.append(modified)
-    return result
+def removeUnitProduction(cfg):
+	keyVar = list(cfg.keys())
+	for var in cfg:
+		productions = cfg[var]
+		flag = True
+		while flag:
+			flag = False
+			for production in productions:
+				if len(production) == 1 and isVar(production[0]):
+					productions.remove(production)
+					if production[0] in keyVar:
+						newProduction = deepcopy([production for production in cfg[production[0]] if production not in productions])
+						productions.extend(newProduction)
+					flag = True
+	return(cfg)
 
-def _print_rules(rules):
-    for key in rules:
-        print(key, '->', rules[key])
+def get_key(val,cfg):
+    for key, value in cfg.items():
+         if val == value:
+             return key
 
-def _check_epsilon(rules):
-    for key in rules:
-        for el in rules[key]:
-            if el == EPS:
-                return True, key
-    return False, None
+def CFGtoCNF(cfg):
+	temp = {}
+	terminal = []
+	for var in cfg:
+		productions = cfg[var]
+		for production in productions:
+			if len(production) == 1 and not(isVar(production[0])):
+				terminal.append(production[0])
+	t = 1
+	for var in cfg:
+		productions = cfg[var]
+		for production in productions:
+			for symbol in production:
+				if not(isVar(symbol)):
+					if symbol not in terminal:
+						terminal.append(symbol)
+						temp.update({f'T{t}' : [[symbol]]})
+						t += 1
+	cfg.update(temp)
+	temp.clear()
 
-def remove_epsilon(rules):
-    local_rules = copy.deepcopy(rules)
-    if_epsilon, epsilon_key = _check_epsilon(local_rules)
-    while if_epsilon:
-        local_rules[epsilon_key].remove(EPS)
-        if len(local_rules[epsilon_key]) == 0:
-            del local_rules[epsilon_key]
-        for key in local_rules:
-            for i, el in enumerate(local_rules[key]):
-                if epsilon_key in el:
-                    if epsilon_key in local_rules:
-                        count = el.count(epsilon_key)
-                        arr = [i for i in range(1, count + 1)]
-                        subset = [x for x in _power_set(arr)]
-                        add = _replace(el, epsilon_key, subset)[:-1]
-                        local_rules[key] = local_rules[key] + add
-                    else:
-                        if len(local_rules[key][i]) == 1:
-                            local_rules[key].remove(epsilon_key)
-                        else:
-                            local_rules[key][i] = el.replace(epsilon_key, '')
-        if_epsilon, epsilon_key = _check_epsilon(local_rules)
-    return local_rules
+	for var in cfg:
+		productions = cfg[var]
+		for i, production in enumerate(productions):
+			for j, symbol in enumerate(production):
+				if not (isVar(symbol)) and len(production) > 1:
+					v = get_key([[symbol]],cfg)
+					if not(v):
+						v =  get_key([[symbol]],temp)
+						if not(v):
+							temp.update({f'T{t}' : [[symbol]]})
+							t += 1
+						productions[i][j] = get_key([[symbol]],temp)
+					else:
+						productions[i][j] = v 
+					cfg.update({var : productions})
+	cfg.update(temp)
+	temp.clear()	
 
-def _check_unit_production(key, rules):
-    for el in rules[key]:
-        if (len(el) == 1) and (el in rules):
-            return True, el
-    return False, None
+	for var in cfg:
+		productions = cfg[var]
+		idx = 1
+		for i, production in enumerate(productions):
+			while len(production) > 2:
+				temp.update({f"{var}{idx}": [[production[0], production[1]]]})
+				production = production[1:]
+				production[0] = f"{var}{idx}"
+				idx += 1
+			productions[i] = production
+			cfg.update({var : productions})
+	cfg.update(temp)
+	return cfg
 
-def _remove_unit_production(key, initial_value, rules):
-    if_unit_production, value = _check_unit_production(initial_value, rules)
-    if if_unit_production:
-        rules = _remove_unit_production(initial_value, value, rules)
-    rules[key].remove(initial_value)
-    rules[key] = rules[key] + rules[initial_value]
-    return rules
+# cfg = readCFGFile(r'data\cfg.txt')
+# cnf = CFGtoCNF((removeUnitProduction(cfg)))
 
-def _check_terminals(str):
-    for letter in str:
-        if letter in string.ascii_lowercase:
-            return True
-    return False
-
-def _check_nonterminals(str, rules):
-    for letter in str:
-        if letter in rules:
-            return True
-    return False
-
-def _generate_symbol(pos, rules):
-    letters = string.ascii_uppercase
-    while letters[pos] in rules:
-        pos -= 1
-    return letters[pos], pos
-
-def read_rules(inputArr, separator='->'):
-    res = {}
-    for el in inputArr:
-        x = el.split(separator)
-        if not x[0] in res:
-            res[x[0]] = []
-        res[x[0]].append(x[1])
-    return res
-
-def remove_unit_production(rules):
-    local_rules = copy.deepcopy(rules)
-    for key in local_rules:
-        if_unit_production, val = _check_unit_production(key, local_rules)
-        if if_unit_production:
-            local_rules = _remove_unit_production(key, val, local_rules)
-    return local_rules
-
-def remove_inaccessible(rules):
-    local_rules = copy.deepcopy(rules)
-    accessedKeys = set()
-    for key in local_rules:
-        for el in local_rules[key]:
-            for letter in el:
-                if (letter in local_rules):
-                    accessedKeys.add(letter)
-    for key in list(local_rules):
-        if key not in accessedKeys:
-            del local_rules[key]
-    return local_rules
-
-def remove_nonproductive(rules):
-    local_rules = copy.deepcopy(rules)
-    productives = set()
-    for key in local_rules:
-        for el in local_rules[key]:
-            if (len(el) == 1) and (el not in local_rules):
-                productives.add(key)
-    call_stack = 1
-    while call_stack:
-        for key in local_rules:
-            if key in productives:
-                continue
-            for el in local_rules[key]:
-                for letter in el:
-                    if (letter in productives):
-                        productives.add(key)
-                        call_stack += 1
-        call_stack -= 1
-    for key in list(local_rules):
-        if key not in productives:
-            del local_rules[key]
-            for innerKey in list(local_rules):
-                for el in local_rules[innerKey]:
-                    if key in el:
-                        local_rules[innerKey].remove(el)
-    return local_rules
-
-def normalize(rules):
-    local_rules = copy.deepcopy(rules)
-    cache = {}
-    terminals = string.ascii_lowercase
-    letters_counter = len(string.ascii_uppercase) - 1
-    call_stack = 1
-    while call_stack:
-        for key in list(local_rules):
-            for i, el in enumerate(local_rules[key]):
-                if len(el) > 2:
-                    if el in cache:
-                        local_rules[key][i] = cache[el]
-                    else:
-                        symbol, letters_counter = _generate_symbol(letters_counter, local_rules)
-                        cache[el] = symbol + el[len(el) - 1]
-                        local_rules[symbol] = [el[:len(el) - 1]]
-                        local_rules[key][i] = cache[el]
-                        call_stack += 1
-        call_stack -= 1
-    for key in list(local_rules):
-        for i, el in enumerate(local_rules[key]):
-            if len(el) == 2 and _check_terminals(el):
-                if el in cache:
-                    local_rules[key][i] = cache[el]
-                else:
-                    for letter in el:
-                        if letter in terminals:
-                            if letter in cache:
-                                local_rules[key][i] = local_rules[key][i].replace(letter, cache[letter])
-                            else:
-                                symbol, letters_counter = _generate_symbol(letters_counter, local_rules)
-                                cache[letter] = symbol
-                                local_rules[cache[letter]] = [letter]
-                                local_rules[key][i] = local_rules[key][i].replace(letter, cache[letter])
-                    cache[el] = local_rules[key][i]
-    return local_rules
-
-def prettyForm(rules):
-    dictionary = {}
-    for rule in rules:
-        # if rule in dictionary:
-        #      dictionary[rule] += ' | '+' '.join(rules[rule])
-        # else:
-        dictionary[rule] = ' '.join(rules[rule])
-    result = ""
-    for key in dictionary:
-        result += key + " -> " + dictionary[key] + "\n"
-    return result
-
-rules = read_rules(INPUT)
-print("Initial Grammar:")
-_print_rules(rules)
-print("\n")
-
-rules = remove_epsilon(rules)
-# print('REMOVE EPSILON')
-# print_rules(rules)
-
-rules = remove_unit_production(rules)
-# print('REMOVE RENAMINGS')
-# print_rules(rules)
-
-rules = remove_inaccessible(rules)
-# print('REMOVE INACCESSIBLES')
-# print_rules(rules)
-
-rules = remove_nonproductive(rules)
-# print('REMOVE NONPRODUCTIVE')
-# print_rules(rules)
-
-rules = normalize(rules)
-# open(r'lib\cnf_contoh.txt', 'w').write(prettyForm(rules))
-# print(rules)
-# prettyForm(rules)
-print("The Chomsky Normal Form:")
-_print_rules(rules)
+# with codecs.open(r'cnf.txt', mode="w", encoding="utf-8") as f:
+#     for key in cnf:
+#         for rules in cnf[key]:
+#             prods_str = map(lambda p: "".join(p), rules)
+#             line = f"{key} -> {' | '.join(prods_str)}\n"
+#             line = line.replace("'", "")
+#             f.write(line)
