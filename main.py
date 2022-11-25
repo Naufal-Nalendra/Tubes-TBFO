@@ -1,6 +1,7 @@
 from lib.CFGtoCNF import readCFG
 from lib.CFGtoCNF import converter
 from lib.CYKparser import CYKParser
+from lib.reader import read
 import sys
 import os
 
@@ -40,19 +41,17 @@ if __name__ == "__main__":
         path = sys.argv[1]
 
     try:
-        inp = readFile(path)
+        inp = read(path)
     except Exception as e:
         print("Error:" + str(e))
         print("Menggunakan testcase default: 'inputAcc.py'\n")
         try:
             path = "inputAcc.py"
-            inp = readFile(path)
+            inp = read(path)
         except Exception as e:
             print("Error:" + str(e))
             print("Menutup program...\n")
             exit(0)
-
-    source = inp
 
     # # Preprocess
     # inp = checkFiniteAutomata(inp)
@@ -63,6 +62,9 @@ if __name__ == "__main__":
 
     print("\n%%%%%%%%%%%%%%%%%%%%%%%%%% RESULT %%%%%%%%%%%%%%%%%%%%%%%%%%")
     # Parse
-    CYKParser(inp, CNF)
-    print("\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-    exit(0)
+    if (len(inp)==0):
+        print("Accepted. No errors detected.")
+    else :
+        CYKParser(inp, CNF)
+        print("\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        exit(0)
