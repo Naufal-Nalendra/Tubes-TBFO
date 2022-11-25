@@ -36,7 +36,8 @@ if __name__ == "__main__":
 
     # Input
     if (len(sys.argv) < 2):
-        path = namaFile
+        dir = "./test/"
+        path = dir + namaFile
     else:
         path = sys.argv[1]
 
@@ -44,9 +45,9 @@ if __name__ == "__main__":
         inp = read(path)
     except Exception as e:
         print("Error:" + str(e))
-        print("Menggunakan testcase default: 'inputAcc.py'\n")
+        print("Menggunakan testcase default: 'inputAcc1.py'\n")
         try:
-            path = "inputAcc.py"
+            path = "./test/inputAcc1.py"
             inp = read(path)
         except Exception as e:
             print("Error:" + str(e))
