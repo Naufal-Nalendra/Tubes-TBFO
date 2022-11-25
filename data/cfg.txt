@@ -84,6 +84,7 @@ TILDE_SYM -> ~
 PERCENT_SYM -> %
 CARET_SYM -> ^
 BACKSLASH -> \
+AMPERSAND -> &
 
 // Condition
 IF -> if
