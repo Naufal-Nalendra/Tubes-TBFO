@@ -8,6 +8,10 @@
 | Akhmad Setiawan                 | 13521164 | K02   |
 | Irgiansyah Mondo                | 13521167 | K02   |
 
+## DEFINISI SINGKAT
+Pada tugas ini kami mengimplementasikan parser untuk JavaScript (Node.js) untuk beberapa statement dan sintaks bawaan JavaScript. Dengan Menggunakan konsep CFG untuk pengerjaan parser yang mengevaluasi syntax program. serta Untuk nama variabel dan operasi (+, -, >, dll) kami menggunakan konsep FA.
+
+
 ## How to use
 
 1. Install python jika belum ada

@@ -1,6 +1,3 @@
-// program to find the factorial of a number
-
-
 const number = parseInt(prompt('Enter a positive integer: '));
 
 if (number < 0) {

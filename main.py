@@ -9,8 +9,8 @@ import os
 
 def readFile(path):
     with open(path, "r") as file:
-        content = file.read()
-    return content
+        isi = file.read()
+    return isi
 
 def ASCIIart():
     print()
@@ -28,34 +28,31 @@ if __name__ == "__main__":
     CNF = convert_list_to_dict(convert_grammar(read_grammar(r'data\cfg.txt')))
     
     # masukkan input file yang diuji
-    namaFile = input("Masukkan nama file yang akan diuji: ")
+    fileName = input("Masukkan nama file yang akan diuji: ")
 
     # Check file exist
-    while os.path.isfile(namaFile) == False:
-        namaFile = input("File tidak ditemukan! Masukkan ulang nama file yang valid: ")
+    while os.path.isfile(fileName) == False:
+        fileName = input("File tidak ditemukan! Masukkan ulang nama file yang valid: ")
 
     # Input
     if (len(sys.argv) < 2):
         dir = "./test/"
-        path = dir + namaFile
+        path = dir + fileName
     else:
         path = sys.argv[1]
 
     try:
-        inp = read(path)
+        input = read(path)
     except Exception as e:
         print("Error:" + str(e))
         print("Menggunakan testcase default: 'inputAcc1.py'\n")
         try:
             path = "./test/inputAcc1.py"
-            inp = read(path)
+            input = read(path)
         except Exception as e:
             print("Error:" + str(e))
             print("Menutup program...\n")
             exit(0)
-
-    # # Preprocess
-    # inp = checkFiniteAutomata(inp)
     
     # Waiting message
     print("Compiling " + str(path) + "...\n")
@@ -63,9 +60,9 @@ if __name__ == "__main__":
 
     print("\n%%%%%%%%%%%%%%%%%%%%%%%%%% RESULT %%%%%%%%%%%%%%%%%%%%%%%%%%")
     # Parse
-    if (len(inp)==0):
+    if (len(input)==0):
         print("Accepted. No errors detected.")
     else :
-        CYKParser(inp, CNF)
+        CYKParser(input, CNF)
         print("\n%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
         exit(0)
